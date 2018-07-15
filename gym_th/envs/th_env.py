@@ -28,7 +28,7 @@ class ForgivingEnv(gym.Env):
         return self.board, reward, self.turnsLeft <= 0, {}
 
     def reset(self):
-        r = requests.get(self.endpoint + 'new', params={'turns': 15})
+        r = requests.get(self.endpoint + 'new', params={'turns': 5})
         self._save_game_state(r.json())
         return self.board
 
