@@ -1,4 +1,5 @@
 import gym
+import gym_th
 
 from baselines import deepq
 

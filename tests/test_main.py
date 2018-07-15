@@ -1,6 +1,7 @@
 import unittest
 import gym
 import gym_th
+import numpy
 
 
 class Environments(unittest.TestCase):
@@ -8,4 +9,8 @@ class Environments(unittest.TestCase):
         env = gym.make('th-v0')
         env.reset()
         env.step(0)
-        env.step(1)
+        env.step(numpy.int64(1))
+
+
+if __name__ == '__main__':
+    unittest.main()

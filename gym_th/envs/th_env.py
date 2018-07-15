@@ -14,7 +14,6 @@ class ForgivingEnv(gym.Env):
         self.board = None
         self.turnsLeft = None
         self.turnsPlayed = None
-        self.reset()
 
     def step(self, action):
         x1, y1, x2, y2 = ForgivingEnv._parse_action(action)
@@ -39,14 +38,15 @@ class ForgivingEnv(gym.Env):
 
     @staticmethod
     def _parse_action(action):
-        if action < 56:
-            x1 = action // 8
-            y1 = action % 8
+        a = np.asscalar(action) if isinstance(action, np.generic) else action
+        if a < 56:
+            x1 = a // 8
+            y1 = a % 8
             x2 = x1 + 1
             y2 = y1
         else:
-            x1 = (action - 56) % 8
-            y1 = (action - 56) // 8
+            x1 = (a - 56) % 8
+            y1 = (a - 56) // 8
             x2 = x1
             y2 = y1 + 1
         return x1, y1, x2, y2
