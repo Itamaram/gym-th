@@ -21,7 +21,7 @@ class ForgivingEnv(gym.Env):
         r = requests.post(self.endpoint + 'move', json=payload)
         self._save_game_state(r.json())
 
-        return self.board, 1, self.turnsLeft > 0, {}
+        return self.board, 1, self.turnsLeft <= 0, {}
 
     def reset(self):
         r = requests.get(self.endpoint + 'new', params={'turns': 15})
