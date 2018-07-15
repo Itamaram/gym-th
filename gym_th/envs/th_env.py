@@ -16,14 +16,16 @@ class ForgivingEnv(gym.Env):
         self.turnsPlayed = None
 
     def step(self, action):
-        delta = self.turnsLeft
         x1, y1, x2, y2 = ForgivingEnv._parse_action(action)
-        payload = {'state': {'turnsPlayed': self.turnsPlayed, 'turnsLeft': self.turnsLeft, 'board': self.board.tolist()}, 'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2}
-        r = requests.post(self.endpoint + 'move', json=payload)
-        self._save_game_state(r.json())
-        delta = self.turnsLeft - delta
+        payload = {
+            'state': {'turnsPlayed': self.turnsPlayed, 'turnsLeft': self.turnsLeft, 'board': self.board.tolist()},
+            'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2}
+        # TODO: Error handling
+        j = requests.post(self.endpoint + 'move', json=payload).json()
+        self._save_game_state(j['state'])
+        reward = 1 if j['isSuccess'] else 0
 
-        return self.board, delta, self.turnsLeft <= 0, {}
+        return self.board, reward, self.turnsLeft <= 0, {}
 
     def reset(self):
         r = requests.get(self.endpoint + 'new', params={'turns': 15})

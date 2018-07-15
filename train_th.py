@@ -14,7 +14,7 @@ def main():
         env,
         q_func=model
     )
-    print("Saving model to cartpole_model.pkl")
+    print("Saving model to th_model.pkl")
     act.save("th_model.pkl")
 
 
