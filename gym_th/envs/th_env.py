@@ -23,7 +23,7 @@ class ForgivingEnv(gym.Env):
         # TODO: Error handling
         j = requests.post(self.endpoint + 'move', json=payload).json()
         self._save_game_state(j['state'])
-        reward = 1 if j['isSuccess'] else 0
+        reward = 1 if j['isSuccess'] else -1
 
         return self.board, reward, self.turnsLeft <= 0, {}
 
