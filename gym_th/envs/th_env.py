@@ -14,6 +14,7 @@ class ForgivingEnv(gym.Env):
         self.board = None
         self.turnsLeft = None
         self.turnsPlayed = None
+        self.num_envs = 1
 
     def step(self, action):
         x1, y1, x2, y2 = ForgivingEnv._parse_action(action)
@@ -23,7 +24,7 @@ class ForgivingEnv(gym.Env):
         # TODO: Error handling
         j = requests.post(self.endpoint + 'move', json=payload).json()
         self._save_game_state(j['state'])
-        reward = 1 if j['isSuccess'] else -1
+        reward = 1 if j['isSuccess'] else 0
 
         return self.board, reward, self.turnsLeft <= 0, {}
 
