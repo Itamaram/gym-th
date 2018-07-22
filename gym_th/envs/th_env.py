@@ -13,7 +13,7 @@ class ForgivingEnv(gym.Env):
         s.mount('http://', HTTPAdapter(max_retries=5))
         self.endpoint = 'http://th.local/api/th/'
         self.action_space = spaces.Discrete(7 * 8 * 2)
-        self.observation_space = spaces.Box(low=0, high=8, shape=(8, 8), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=0, high=2, shape=(8, 8, 8), dtype=np.uint8)
         self.board = None
         self.turnsLeft = None
         self.turnsPlayed = None
