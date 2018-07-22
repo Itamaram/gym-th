@@ -2,12 +2,15 @@ import gym
 import numpy as np
 import requests
 from gym import spaces
+from requests.adapters import HTTPAdapter
 
 
 class ForgivingEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
     def __init__(self):
+        s = requests.Session()
+        s.mount('http://', HTTPAdapter(max_retries=5))
         self.endpoint = 'http://th.local/api/th/'
         self.action_space = spaces.Discrete(7 * 8 * 2)
         self.observation_space = spaces.Box(low=0, high=8, shape=(8, 8), dtype=np.uint8)
