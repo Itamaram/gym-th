@@ -17,9 +17,14 @@ class ForgivingEnv(gym.Env):
         self.board = None
         self.turnsLeft = None
         self.turnsPlayed = None
+        self.moves = []
         self.num_envs = 1
 
     def step(self, action):
+        a = np.asscalar(action) if isinstance(action, np.generic) else action
+        if a not in self.moves:
+            return self.obs, -0.1, False, {}
+
         x1, y1, x2, y2 = ForgivingEnv._parse_action(action)
         payload = {
             'state': {'turnsPlayed': self.turnsPlayed, 'turnsLeft': self.turnsLeft, 'board': self.board},
@@ -27,7 +32,7 @@ class ForgivingEnv(gym.Env):
         # TODO: Error handling
         j = requests.post(self.endpoint + 'move', json=payload).json()
         self._save_game_state(j['state'])
-        reward = 1 if j['isSuccess'] else 0
+        reward = 1 if j['isSuccess'] else -0.1
 
         return self.obs, reward, self.turnsLeft <= 0, {}
 
@@ -40,6 +45,7 @@ class ForgivingEnv(gym.Env):
         self.board = j['board']
         self.turnsLeft = j['turnsLeft']
         self.turnsPlayed = j['turnsPlayed']
+        self.moves = [ForgivingEnv._unparse_action(m['x1'], m['y1'], m['x2'], m['y2']) for m in j['availableMoves']]
         self.obs = np.array(ForgivingEnv._generate_obs(j['board'], j['availableMoves']), dtype=np.uint8)
 
     def render(self, mode='human', close=False):
@@ -67,8 +73,16 @@ class ForgivingEnv(gym.Env):
             x2 = x1 + 1
             y2 = y1
         else:
-            x1 = (a - 56) % 8
-            y1 = (a - 56) // 8
+            x1 = (a - 56) // 7
+            y1 = (a - 56) % 7
             x2 = x1
             y2 = y1 + 1
         return x1, y1, x2, y2
+
+    @staticmethod
+    def _unparse_action(x1, y1, x2, y2):
+        if x2 - x1:
+            return x1 * 8 + y1
+        elif y2 - y1:
+            return x1 * 7 + y1 + 56
+        return -1
