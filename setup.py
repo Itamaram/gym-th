@@ -1,6 +1,6 @@
 from setuptools import setup
 
 setup(name='gym_th',
-      version='0.0.14',
+      version='0.0.15',
       install_requires=['gym', 'requests', 'numpy']  # And any other dependencies foo needs
       )

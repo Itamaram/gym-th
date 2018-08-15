@@ -8,7 +8,17 @@ from requests.adapters import HTTPAdapter
 class ForgivingEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self):
+    def __init__(self,
+                 critical_success=False,
+                 critical_failure=False,
+                 success_reward=1,
+                 failure_reward=0,
+                 starting_turns=10):
+        self.critical_success = critical_success
+        self.critical_failure = critical_failure
+        self.success_reward = success_reward
+        self.failure_reward = failure_reward
+        self.starting_turns = starting_turns
         s = requests.Session()
         s.mount('http://', HTTPAdapter(max_retries=5))
         self.endpoint = 'http://th.local/api/th/'
@@ -32,12 +42,12 @@ class ForgivingEnv(gym.Env):
         # TODO: Error handling
         j = requests.post(self.endpoint + 'move', json=payload).json()
         self._save_game_state(j['state'])
-        reward = 1 if j['isSuccess'] else -0.1
-
-        return self.obs, reward, self.turnsLeft <= 0, {}
+        reward = self.success_reward if j['isSuccess'] else self.failure_reward
+        done = self.turnsLeft <= 0 or (j['isSuccess'] and self.critical_success) or (not j['isSuccess'] and self.critical_failure)
+        return self.obs, reward, done, {}
 
     def reset(self):
-        r = requests.get(self.endpoint + 'new', params={'turns': 5})
+        r = requests.get(self.endpoint + 'new', params={'turns': self.starting_turns})
         self._save_game_state(r.json())
         return self.obs
 
