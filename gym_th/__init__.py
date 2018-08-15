@@ -6,7 +6,7 @@ register(
 )
 
 register(
-    id='th-single',
+    id='th-single-v0',
     entry_point='gym_th.envs:ForgivingEnv',
     kwargs={'critical_success': True, 'failure_reward': -0.1},
 )
