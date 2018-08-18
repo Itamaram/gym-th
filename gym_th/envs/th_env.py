@@ -23,7 +23,7 @@ class ForgivingEnv(gym.Env):
         s.mount('http://', HTTPAdapter(max_retries=5))
         self.endpoint = 'http://th.local/api/th/'
         self.action_space = spaces.Discrete(7 * 8 * 2)
-        self.observation_space = spaces.Box(low=0, high=2, shape=(10, 8, 8), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=0, high=2, shape=(8, 8, 10), dtype=np.uint8)
         self.board = None
         self.turnsLeft = None
         self.turnsPlayed = None
@@ -63,16 +63,14 @@ class ForgivingEnv(gym.Env):
 
     @staticmethod
     def _generate_obs(board, moves):
-        b = [[[1 if i == t else 0 for i in line] for line in board] for t in range(8)]
-        mhorz = [x[:] for x in [[0] * 8] * 8]
-        mvert = [x[:] for x in [[0] * 8] * 8]
+        b = [[[1 if board[x][y] == t else 0 for t in range(10)] for y in range(8)] for x in range(8)]
         for m in moves:
             if m['x2'] - m['x1']:
-                mhorz[m['x1']][m['y1']] = 1
+                b[m['y1']][m['x1']][8] = 1
             elif m['y2'] - m['y1']:
-                mvert[m['x1']][m['y1']] = 1
+                b[m['y1']][m['x1']][9] = 1
 
-        return b + [mhorz] + [mvert]
+        return b
 
     @staticmethod
     def _parse_action(action):
