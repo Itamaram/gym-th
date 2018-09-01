@@ -13,17 +13,17 @@ class ForgivingEnv(gym.Env):
                  critical_failure=False,
                  success_reward=1,
                  failure_reward=0,
-                 starting_turns=10):
+                 starting_turns=5):
         self.critical_success = critical_success
         self.critical_failure = critical_failure
         self.success_reward = success_reward
         self.failure_reward = failure_reward
         self.starting_turns = starting_turns
         s = requests.Session()
-        s.mount('http://', HTTPAdapter(max_retries=5))
+        s.mount('http://', HTTPAdapter(max_retries=starting_turns))
         self.endpoint = 'http://th.local/api/th/'
         self.action_space = spaces.Discrete(7 * 8 * 2)
-        self.observation_space = spaces.Box(low=0, high=8, shape=(8, 8, 3), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=0, high=8, shape=(8, 8, 2), dtype=np.uint8)
         self.board = None
         self.turnsLeft = None
         self.turnsPlayed = None
@@ -63,12 +63,12 @@ class ForgivingEnv(gym.Env):
 
     @staticmethod
     def _generate_obs(board, moves):
-        b = [[[board[x][y] if t == 0 else 0 for t in range(3)] for y in range(8)] for x in range(8)]
+        b = [[[board[x][y] if t == 0 else 0 for t in range(2)] for y in range(8)] for x in range(8)]
         for m in moves:
             if m['x2'] - m['x1']:
-                b[m['y1']][m['x1']][2] = 1
+                b[m['y1']][m['x1']][1] += 1
             elif m['y2'] - m['y1']:
-                b[m['y1']][m['x1']][2] = 1
+                b[m['y1']][m['x1']][1] += 2
 
         return b
 
