@@ -33,7 +33,7 @@ class ForgivingEnv(gym.Env):
     def step(self, action):
         a = np.asscalar(action) if isinstance(action, np.generic) else action
         if a not in self.moves:
-            return self.obs, -0.1, False, {}
+            return self.obs, self.failure_reward, self.critical_failure, {}
 
         x1, y1, x2, y2 = ForgivingEnv._parse_action(action)
         payload = {
